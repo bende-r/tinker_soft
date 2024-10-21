@@ -3,7 +3,7 @@ import json
 from flask import Flask, request, Response
 from flask_api import status
 
-from tinker_soft.device_manager.DeviceManager import DeviceManager
+from device_manager.DeviceManager import DeviceManager
 from logger.logger import get_logger
 from storage.Device import Device
 
