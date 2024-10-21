@@ -4,7 +4,7 @@ from logger.logger import get_logger
 logger = get_logger(__name__)
 
 
-class Scanner(DefaultDelegate):
+class ScanDelegate(DefaultDelegate):
     def __init__(self):
         DefaultDelegate.__init__(self)
 

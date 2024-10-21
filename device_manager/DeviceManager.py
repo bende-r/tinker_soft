@@ -9,7 +9,7 @@ from bluepy.btle import Scanner
 from data_poller.DataPoller import DataPoller
 from data_poller.DataPoller import MI_TEMPERATURE, MI_HUMIDITY, MI_BATTERY
 
-from scanner.Scanner import Scanner
+from tinker_soft.scanner.ScanDelegate import ScanDelegate
 from storage.Device import Device
 from storage.SQLiteStorage import SQLiteStorage
 from storage.Storage import Storage
