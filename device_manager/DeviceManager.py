@@ -9,7 +9,7 @@ from bluepy.btle import Scanner
 from data_poller.DataPoller import DataPoller
 from data_poller.DataPoller import MI_TEMPERATURE, MI_HUMIDITY, MI_BATTERY
 
-from tinker_soft.scanner.ScanDelegate import ScanDelegate
+from scanner.ScanDelegate import ScanDelegate
 from storage.Device import Device
 from storage.SQLiteStorage import SQLiteStorage
 from storage.Storage import Storage
@@ -24,7 +24,7 @@ class DeviceManager(object):
         self._pollers = list()
         self._storage: Storage = storage
         self._timeout = timeout
-        self._scanner = Scanner().withDelegate(Scanner())
+        self._scanner = Scanner().withDelegate(ScanDelegate())
         thr = threading.Thread(target=self._collect_statistic_data, daemon=True, name='update_devices_data')
         thr.start()
 
