@@ -10,7 +10,6 @@ from typing import Union
 
 logger = get_logger(__name__)
 
-
 def con_db(func):
     def wrapper(*args, **kwargs):
         con = None
@@ -33,7 +32,6 @@ def con_db(func):
                 con.close()
 
     return wrapper
-
 
 class SQLiteStorage(Storage):
 

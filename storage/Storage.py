@@ -3,7 +3,6 @@ from typing import List
 
 from storage.Device import Device
 
-
 class Storage(ABC):
 
     @abstractmethod

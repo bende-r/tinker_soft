@@ -1,6 +1,5 @@
 import json
 
-
 class Device(object):
     def __init__(self, mac: str, avg_battery: float = 0.0,
                  avg_temperature: float = 0.0,
