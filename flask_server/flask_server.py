@@ -55,4 +55,26 @@ def create_app():
             return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(json.dumps([json.loads(str(d)) for d in devices]), content_type='application/json')
 
+    @app.route('/devices/<mac>/statistics', methods=['GET'])
+    def get_device_statistics(mac: str):
+        device = deviceManager.get_device(mac)
+        if device is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        stat_data = deviceManager._get_stat(device)
+        if not stat_data:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        # Convert stat_data to a proper response format
+        response_data = [
+            {
+                "timestamp": d[0],
+                "temperature": d[3],
+                "humidity": d[4],
+                "battery": d[5]
+            }
+            for d in stat_data
+        ]
+        return Response(json.dumps(response_data), content_type='application/json')
+
     return app
