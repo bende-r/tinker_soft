@@ -5,9 +5,12 @@ import signal
 import sys
 from flask_server.flask_server import create_app
 from discovery_client.client import DiscoveryClient
+from logger.logger import get_logger
+
+logger = get_logger(__name__)
 
 def signal_handler(signum, frame):
-    print("\nSignal received, shutting down...")
+    logger.info("\nSignal received, shutting down...")
     sys.exit(0)
 
 def start_discovery_client(discovery_port):
@@ -55,7 +58,7 @@ def main():
         # Запускаем клиент обнаружения
         discovery_client = start_discovery_client(args.discovery_port)
         if not discovery_client:
-            print("Failed to start discovery client")
+            logger.info("Failed to start discovery client")
             sys.exit(1)
 
         # Создаем и запускаем Flask приложение
@@ -64,9 +67,9 @@ def main():
         app.run(host='0.0.0.0', port=args.port)
 
     except KeyboardInterrupt:
-        print("\nKeyboard interrupt received, shutting down...")
+        logger.error("\nKeyboard interrupt received, shutting down...")
     except Exception as e:
-        print(f"Error occurred: {e}")
+        logger.error(f"Error occurred: {e}")
     finally:
         # Корректно останавливаем клиент обнаружения
         if discovery_client and discovery_client.is_running():
