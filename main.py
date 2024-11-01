@@ -5,6 +5,9 @@ import json
 import threading
 
 from flask_server.flask_server import create_app
+from logger.logger import get_logger
+
+logger = get_logger(__name__)
 
 def get_own_ip():
     try:
@@ -15,7 +18,7 @@ def get_own_ip():
             ip_address = s.getsockname()[0]
         return ip_address
     except Exception as e:
-        print(f"Could not determine IP address: {e}")
+        logger.error(f"Could not determine IP address: {e}")
         return None
 
 def listen_for_discovery():
@@ -24,23 +27,23 @@ def listen_for_discovery():
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind(("", 5002))  # Listen on port 5002 for discovery messages
 
-    print("Listening for discovery requests...")
+    logger.info("Listening for discovery requests...")
 
     while True:
         try:
             # Receive the broadcast message
             data, address = sock.recvfrom(1024)
             message = data.decode()
-            print(f"Received discovery message from {address}: {message}")
+            logger.info(f"Received discovery message from {address}: {message}")
 
             # Respond if the message matches "DISCOVER_DEVICES"
             if message == "DISCOVER_DEVICES":
                 response = json.dumps(get_own_ip()).encode()
                 sock.sendto(response, address)  # Send device info back to the sender
-                print(f"Sent device info to {address}")
+                logger.info(f"Sent device info to {address}")
 
         except Exception as e:
-            print(f"Error while responding to discovery: {e}")
+            logger.error(f"Error while responding to discovery: {e}")
 
 # Command-line argument parsing
 parser = argparse.ArgumentParser(description='BLE arguments for port management')
