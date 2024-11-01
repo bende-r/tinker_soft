@@ -18,7 +18,6 @@ from logger.logger import get_logger
 logger = get_logger(__name__)
 MAC_START = '4C:65:A8:'.lower()
 
-
 class DeviceManager(object):
     def __init__(self, storage: Storage = SQLiteStorage(), timeout: int = 5):
         self._pollers = list()

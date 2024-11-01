@@ -8,13 +8,11 @@ _HANDLE_READ_FIRMWARE_VERSION = 0x0024
 _HANDLE_READ_NAME = 0x03
 _HANDLE_READ_WRITE_SENSOR_DATA = 0x0010
 
-
 MI_TEMPERATURE = "temperature"
 MI_HUMIDITY = "humidity"
 MI_BATTERY = "battery"
 
 _LOGGER = logging.getLogger(__name__)
-
 
 class DataPoller(object):
     def __init__(self, mac, backend, cache_timeout=600, retries=3, adapter='hci0', ble_timeout=10):
