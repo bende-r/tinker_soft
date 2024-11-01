@@ -4,7 +4,7 @@ import argparse
 import signal
 import sys
 from flask_server.flask_server import create_app
-from discovery_client import DiscoveryClient
+from discovery_client.client import DiscoveryClient
 
 def signal_handler(signum, frame):
     print("\nSignal received, shutting down...")
