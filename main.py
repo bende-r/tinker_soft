@@ -1,14 +1,20 @@
-
+# main.py
 import subprocess
 import argparse
-import threading
+import signal
+import sys
 from flask_server.flask_server import create_app
-from discovery_client.client import DiscoveryClient
+from discovery_client import DiscoveryClient
+
+def signal_handler(signum, frame):
+    print("\nSignal received, shutting down...")
+    sys.exit(0)
 
 def start_discovery_client(discovery_port):
     client = DiscoveryClient(discovery_port=discovery_port)
-    client.start()
-    return client
+    if client.start():
+        return client
+    return None
 
 def create_parser():
     parser = argparse.ArgumentParser(description='Flask server with network discovery')
@@ -33,36 +39,37 @@ def create_parser():
     return parser
 
 def main():
+    # Регистрируем обработчик сигналов
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
     parser = create_parser()
     args = parser.parse_args()
-
-    # Убиваем процесс, если нужно
-    if args.kill_process_with_port:
-        subprocess.run(f'fuser -s -TERM -k {args.port}/tcp', shell=True)
-
-    # Запускаем клиент обнаружения в отдельном потоке
     discovery_client = None
+
     try:
-        # Создаем и запускаем клиент обнаружения
+        # Убиваем процесс, если нужно
+        if args.kill_process_with_port:
+            subprocess.run(f'fuser -s -TERM -k {args.port}/tcp', shell=True)
+
+        # Запускаем клиент обнаружения
         discovery_client = start_discovery_client(args.discovery_port)
-        
+        if not discovery_client:
+            print("Failed to start discovery client")
+            sys.exit(1)
+
         # Создаем и запускаем Flask приложение
         app = create_app()
-        
-        # Добавляем клиент обнаружения в контекст приложения,
-        # чтобы иметь доступ к нему из обработчиков
         app.discovery_client = discovery_client
-        
-        # Запускаем Flask сервер
         app.run(host='0.0.0.0', port=args.port)
-        
+
     except KeyboardInterrupt:
-        print("\nShutting down...")
+        print("\nKeyboard interrupt received, shutting down...")
     except Exception as e:
         print(f"Error occurred: {e}")
     finally:
-        # Корректно останавливаем клиент обнаружения при выходе
-        if discovery_client:
+        # Корректно останавливаем клиент обнаружения
+        if discovery_client and discovery_client.is_running():
             discovery_client.stop()
 
 if __name__ == '__main__':
