@@ -16,7 +16,7 @@ def con_db(func):
         db = args[0].db
         try:
             con = sl.connect(db)
-            logger.info("Connect to " + db)
+            # logger.info("Connect to " + db)
             value = func(*args, **kwargs, connection=con)
             return value
         except sl.Error as e:
@@ -28,7 +28,7 @@ def con_db(func):
             return e
         finally:
             if con:
-                logger.info("Close connect to " + db)
+                # logger.info("Close connect to " + db)
                 con.close()
 
     return wrapper
@@ -90,7 +90,7 @@ class SQLiteStorage(Storage):
                        f" avg_humidity = {device.avg_humidity}, online = {int(device.is_online)}"
                        f" WHERE mac = '{device.mac}'")
         connection.commit()
-        logger.info(f"Updating device {device.mac} success")
+        # logger.info(f"Updating device {device.mac} success")
         return device
 
     @con_db
