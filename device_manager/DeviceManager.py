@@ -45,8 +45,8 @@ class DeviceManager(object):
             temperature = poller.parameter_value(MI_TEMPERATURE)
             humidity = poller.parameter_value(MI_HUMIDITY)
             battery = poller.parameter_value(MI_BATTERY)
-            logger.info(f"Statistic data from device "
-                        f"{device.mac} - temperature {temperature} - humidity {humidity} - battery {battery}")
+            # logger.info(f"Statistic data from device "
+                        # f"{device.mac} - temperature {temperature} - humidity {humidity} - battery {battery}")
             self._storage.add_statistic_data(device.mac, temperature, humidity, battery)
             stat_data = self._get_stat(device)
             avg_temperature = 0
