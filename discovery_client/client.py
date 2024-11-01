@@ -3,6 +3,9 @@ import socket
 import threading
 import json
 import time
+from logger.logger import get_logger
+
+logger = get_logger(__name__)
 
 class DiscoveryClient:
     def __init__(self, discovery_port=5001):
@@ -21,10 +24,10 @@ class DiscoveryClient:
                 self.udp_thread = threading.Thread(target=self._listen_for_discovery)
                 self.udp_thread.daemon = True
                 self.udp_thread.start()
-                print("Discovery client started")
+                logger.info("Discovery client started")
                 return True
             except Exception as e:
-                print(f"Failed to start discovery client: {e}")
+                logger.error(f"Failed to start discovery client: {e}")
                 self._running = False
                 return False
         return False
@@ -32,12 +35,12 @@ class DiscoveryClient:
     def stop(self):
         """Останавливает клиент обнаружения"""
         if self._running:
-            print("Stopping discovery client...")
+            logger.info("Stopping discovery client...")
             self._running = False
             self._stop_event.set()
             if self.udp_thread and self.udp_thread.is_alive():
                 self.udp_thread.join(timeout=2)  # Ждем завершения потока максимум 2 секунды
-            print("Discovery client stopped")
+            logger.info("Discovery client stopped")
     
     def is_running(self):
         """Возвращает текущее состояние клиента"""
@@ -77,7 +80,7 @@ class DiscoveryClient:
                         
             except Exception as e:
                 if not self._stop_event.is_set():
-                    print(f"UDP listening error: {e}")
+                    logger.error(f"UDP listening error: {e}")
                     time.sleep(1)
     
     def _register_with_server(self, server_ip, tcp_port):
@@ -92,6 +95,6 @@ class DiscoveryClient:
                 s.send("register".encode())
                 response = s.recv(1024).decode()
                 if response == "OK":
-                    print(f"Successfully registered with server at {server_ip}")
+                    logger.info(f"Successfully registered with server at {server_ip}")
         except Exception as e:
-            print(f"Failed to register with server at {server_ip}: {e}")
+            logger.error(f"Failed to register with server at {server_ip}: {e}")
