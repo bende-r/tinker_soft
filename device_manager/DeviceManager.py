@@ -45,8 +45,8 @@ class DeviceManager(object):
             temperature = poller.parameter_value(MI_TEMPERATURE)
             humidity = poller.parameter_value(MI_HUMIDITY)
             battery = poller.parameter_value(MI_BATTERY)
-            # logger.info(f"Statistic data from device "
-                        # f"{device.mac} - temperature {temperature} - humidity {humidity} - battery {battery}")
+            logger.info(f"Statistic data from device "
+                         f"{device.mac} - temperature {temperature} - humidity {humidity} - battery {battery}")
             self._storage.add_statistic_data(device.mac, temperature, humidity, battery)
             stat_data = self._get_stat(device)
             avg_temperature = 0
@@ -56,9 +56,9 @@ class DeviceManager(object):
                 avg_temperature += d[3]
                 avg_humidity += d[4]
                 avg_battery += d[5]
-            device.avg_temperature = avg_temperature / len(stat_data)
-            device.avg_humidity = avg_humidity / len(stat_data)
-            device.avg_battery = avg_battery / len(stat_data)
+            device.avg_temperature = avg_temperature #/ len(stat_data)
+            device.avg_humidity = avg_humidity #/ len(stat_data)
+            device.avg_battery = avg_battery #/ len(stat_data)
             device.is_online = True
             self._storage.update_device(device)
         except BTLEException as e:
