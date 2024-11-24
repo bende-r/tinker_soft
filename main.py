@@ -59,8 +59,8 @@ if __name__ == '__main__':
     parser.add_argument(
         '--port',
         type=int,
-        default=5001,
-        help='provide an int port (default: 5001)'
+        default=5000,
+        help='provide an int port (default: 5000)'
     )
     args = parser.parse_args()
 
