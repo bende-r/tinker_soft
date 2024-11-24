@@ -53,9 +53,9 @@ class DeviceManager(object):
             avg_humidity = 0
             avg_battery = 0
             for d in stat_data:
-                avg_temperature += d[3]
-                avg_humidity += d[4]
-                avg_battery += d[5]
+                avg_temperature = d[3]
+                avg_humidity = d[4]
+                avg_battery = d[5]
             device.avg_temperature = avg_temperature #/ len(stat_data)
             device.avg_humidity = avg_humidity #/ len(stat_data)
             device.avg_battery = avg_battery #/ len(stat_data)
