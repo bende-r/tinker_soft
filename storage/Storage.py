@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABC
 from typing import List
 
-from storage.Device import Device
+from storage.Sensor import Sensor
 
 class Storage(ABC):
 
@@ -10,31 +10,31 @@ class Storage(ABC):
         ...
 
     @abstractmethod
-    def get_devices(self) -> List[Device]:
+    def get_devices(self) -> List[Sensor]:
         ...
 
     @abstractmethod
-    def add_device(self, mac: str) -> Device:
+    def add_device(self, mac: str) -> Sensor:
         ...
 
     @abstractmethod
-    def get_device(self, mac: str) -> Device:
+    def get_device(self, mac: str) -> Sensor:
         ...
 
     @abstractmethod
-    def update_device(self, device: Device) -> Device:
+    def update_device(self, device: Sensor) -> Sensor:
         ...
 
     @abstractmethod
-    def update_online_device(self, device: Device, online: bool) -> Device:
+    def update_online_device(self, device: Sensor, online: bool) -> Sensor:
         ...
 
     @abstractmethod
-    def get_online_devices(self) -> List[Device]:
+    def get_online_devices(self) -> List[Sensor]:
         ...
 
     @abstractmethod
-    def delete_device(self, device: Device) -> bool:
+    def delete_device(self, device: Sensor) -> bool:
         ...
 
     @abstractmethod

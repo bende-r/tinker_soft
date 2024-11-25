@@ -4,7 +4,7 @@ import datetime
 from typing import List
 
 from logger.logger import get_logger
-from storage.Device import Device
+from storage.Sensor import Sensor
 from storage.Storage import Storage
 from typing import Union
 
@@ -56,23 +56,23 @@ class SQLiteStorage(Storage):
         connection.commit()
 
     @con_db
-    def get_devices(self, connection=None) -> List[Device]:
+    def get_devices(self, connection=None) -> List[Sensor]:
         devices = []
         cursor = connection.cursor()
         data = cursor.execute("SELECT * FROM 'devices'")
         for row in data:
-            devices.append(Device(*row))
+            devices.append(Sensor(*row))
         return devices
 
     @con_db
-    def get_device(self, mac: str, connection=None) -> Device:
+    def get_device(self, mac: str, connection=None) -> Sensor:
         cursor = connection.cursor()
         data = cursor.execute(f"SELECT * FROM 'devices' WHERE mac = '{mac}'")
         for row in data:
-            return Device(*row)
+            return Sensor(*row)
 
     @con_db
-    def add_device(self, mac: str, connection=None) -> Union[Exception, Device, None]:
+    def add_device(self, mac: str, connection=None) -> Union[Exception, Sensor, None]:
         cursor = connection.cursor()
         cursor.execute(f"INSERT INTO 'devices' (mac) VALUES ('{mac}')")
         connection.commit()
@@ -84,7 +84,7 @@ class SQLiteStorage(Storage):
             return None
 
     @con_db
-    def update_device(self, device: Device, connection=None) -> Device:
+    def update_device(self, device: Sensor, connection=None) -> Sensor:
         cursor = connection.cursor()
         cursor.execute(f"UPDATE 'devices' SET avg_battery = {device.avg_battery}, avg_temp = {device.avg_temperature},"
                        f" avg_humidity = {device.avg_humidity}, online = {int(device.is_online)}"
@@ -94,23 +94,23 @@ class SQLiteStorage(Storage):
         return device
 
     @con_db
-    def update_online_device(self, device: Device, connection=None) -> Device:
+    def update_online_device(self, device: Sensor, connection=None) -> Sensor:
         cursor = connection.cursor()
         cursor.execute(f"UPDATE 'devices' SET online = {int(device.is_online)} WHERE mac = '{device.mac}'")
         connection.commit()
         return device
 
     @con_db
-    def get_online_devices(self, connection=None) -> List[Device]:
+    def get_online_devices(self, connection=None) -> List[Sensor]:
         devices = []
         cursor = connection.cursor()
         data = cursor.execute("SELECT * FROM 'devices' where online = 1")
         for row in data:
-            devices.append(Device(*row))
+            devices.append(Sensor(*row))
         return devices
 
     @con_db
-    def delete_device(self, device: Device, connection=None) -> bool:
+    def delete_device(self, device: Sensor, connection=None) -> bool:
         cursor = connection.cursor()
         cursor.execute(f"DELETE from 'devices' WHERE mac = '{device.mac}'")
         connection.commit()

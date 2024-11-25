@@ -6,11 +6,11 @@ from bluepy.btle import BTLEException
 from typing import List
 from bluepy.btle import Scanner
 
-from data_poller.DataPoller import DataPoller
-from data_poller.DataPoller import MI_TEMPERATURE, MI_HUMIDITY, MI_BATTERY
+from sensor_data_poller.SensorDataPoller import SensorDataPoller
+from sensor_data_poller.SensorDataPoller import MI_TEMPERATURE, MI_HUMIDITY, MI_BATTERY
 
-from scanner.ScanDelegate import ScanDelegate
-from storage.Device import Device
+from sensor_scanner.SensorScanner import SensorScanner
+from storage.Sensor import Sensor
 from storage.SQLiteStorage import SQLiteStorage
 from storage.Storage import Storage
 from logger.logger import get_logger
@@ -18,12 +18,12 @@ from logger.logger import get_logger
 logger = get_logger(__name__)
 MAC_START = '4C:65:A8:'.lower()
 
-class DeviceManager(object):
+class SensorManager(object):
     def __init__(self, storage: Storage = SQLiteStorage(), timeout: int = 5):
         self._pollers = list()
         self._storage: Storage = storage
         self._timeout = timeout
-        self._scanner = Scanner().withDelegate(ScanDelegate())
+        self._scanner = Scanner().withDelegate(SensorScanner())
         thr = threading.Thread(target=self._collect_statistic_data, daemon=True, name='update_devices_data')
         thr.start()
 
@@ -39,8 +39,8 @@ class DeviceManager(object):
                 self._storage.update_device(d)
             time.sleep(timeout)
 
-    def update_device_info(self, device: Device):
-        poller = DataPoller(device.mac, BluepyBackend, ble_timeout=self._timeout)
+    def update_device_info(self, device: Sensor):
+        poller = SensorDataPoller(device.mac, BluepyBackend, ble_timeout=self._timeout)
         try:
             temperature = poller.parameter_value(MI_TEMPERATURE)
             humidity = poller.parameter_value(MI_HUMIDITY)
@@ -85,7 +85,7 @@ class DeviceManager(object):
 
         return devices
 
-    def add_device(self, mac) -> Device:
+    def add_device(self, mac) -> Sensor:
         return self._storage.add_device(mac)
 
     def get_devices(self) -> List:
@@ -94,11 +94,11 @@ class DeviceManager(object):
     def get_online_devices(self) -> List:
         return self._storage.get_online_devices()
 
-    def get_device(self, mac) -> Device:
+    def get_device(self, mac) -> Sensor:
         return self._storage.get_device(mac)
 
-    def _get_stat(self, device: Device) -> List:
+    def _get_stat(self, device: Sensor) -> List:
         return self._storage.get_statistic_data(device.mac)
 
-    def delete_device(self, device: Device):
+    def delete_device(self, device: Sensor):
         return self._storage.delete_device(device)

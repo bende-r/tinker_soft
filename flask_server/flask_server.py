@@ -3,15 +3,15 @@ import json
 from flask import Flask, request, Response
 from flask_api import status
 
-from device_manager.DeviceManager import DeviceManager
+from sensor_manager.SensorManager import SensorManager
 from logger.logger import get_logger
-from storage.Device import Device
+from storage.Sensor import Sensor
 
 logger = get_logger(__name__)
 
 def create_app():
     app = Flask(__name__)
-    deviceManager = DeviceManager()
+    deviceManager = SensorManager()
 
     @app.route('/scan')
     def scan():
@@ -36,7 +36,7 @@ def create_app():
         args = request.args
         mac = args.get('mac')
         device = deviceManager.add_device(mac)
-        if not isinstance(device, Device):
+        if not isinstance(device, Sensor):
             return Response(str(device), status=status.HTTP_400_BAD_REQUEST)
         return json.loads(str(device)), status.HTTP_201_CREATED
 

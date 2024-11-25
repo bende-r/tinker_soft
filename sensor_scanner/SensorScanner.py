@@ -3,8 +3,7 @@ from logger.logger import get_logger
 
 logger = get_logger(__name__)
 
-
-class ScanDelegate(DefaultDelegate):
+class SensorScanner(DefaultDelegate):
     def __init__(self):
         DefaultDelegate.__init__(self)
 
