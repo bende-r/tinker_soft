@@ -123,13 +123,15 @@ class SQLiteStorage(Storage):
     #     return device
 
     @con_db
-    def update_online_device(self, device: Sensor):
-        # The connection parameter is managed by the decorator
-        cursor = self.connection.cursor()
-        cursor.execute(f"UPDATE 'devices' SET online = {int(device.is_online)} WHERE mac = '{device.mac}'")
-        self.connection.commit()
-        return device
-
+    def update_online_device(self, device: Sensor, connection=None) -> Sensor:
+        try:
+            cursor = connection.cursor()
+            cursor.execute(f"UPDATE 'devices' SET online = {int(device.is_online)} WHERE mac = '{device.mac}'")
+            connection.commit()
+            return device
+        except Exception as e:
+            logger.error(f"Error updating online status for {device.mac}: {e}")
+            raise
 
 
     @con_db
