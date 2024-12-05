@@ -74,7 +74,7 @@ class SensorManager(object):
         logger.info(f"Start scan devices ...")
         devices = list()
         try:
-            scan_dev = self._scanner.scan(passive=False, timeout = self._timeout)
+            scan_dev = self._scanner.scan(passive=True, timeout = self._timeout)
     
             for d in scan_dev:
                 logger.info(f"Device {d.addr} ({d.addrType}), RSSI={d.rssi}")
