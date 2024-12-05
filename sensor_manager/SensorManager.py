@@ -19,7 +19,7 @@ logger = get_logger(__name__)
 MAC_START = '4C:65:A8:'.lower()
 
 class SensorManager(object):
-    def __init__(self, storage: Storage = SQLiteStorage(), timeout: int = 5):
+    def __init__(self, storage:SQLiteStorage = SQLiteStorage(), timeout: int = 5):
         self._pollers = list()
         self._storage: Storage = storage
         self._timeout = timeout
