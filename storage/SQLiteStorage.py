@@ -123,11 +123,11 @@ class SQLiteStorage(Storage):
     #     return device
 
     @con_db
-    def update_online_device(self, device: Sensor, conn=None) -> Sensor:
+    def update_online_device(self, device: Sensor, connection=None) -> Sensor:
         try:
-            cursor = conn.cursor()
+            cursor = connection.cursor()
             cursor.execute(f"UPDATE 'devices' SET online = {int(device.is_online)} WHERE mac = '{device.mac}'")
-            conn.commit()
+            connection.commit()
             return device
         except Exception as e:
             logger.error(f"Error updating online status for {device.mac}: {e}")
