@@ -115,12 +115,24 @@ class SQLiteStorage(Storage):
         # logger.info(f"Updating device {device.mac} success")
         return device
 
+    # @con_db
+    # def update_online_device(self, device: Sensor, connection=None) -> Sensor:
+    #     cursor = connection.cursor()
+    #     cursor.execute(f"UPDATE 'devices' SET online = {int(device.is_online)} WHERE mac = '{device.mac}'")
+    #     connection.commit()
+    #     return device
+
     @con_db
-    def update_online_device(self, device: Sensor, connection=None) -> Sensor:
-        cursor = connection.cursor()
-        cursor.execute(f"UPDATE 'devices' SET online = {int(device.is_online)} WHERE mac = '{device.mac}'")
-        connection.commit()
-        return device
+    def update_online_device(self, device: Sensor, conn=None) -> Sensor:
+        try:
+            cursor = conn.cursor()
+            cursor.execute(f"UPDATE 'devices' SET online = {int(device.is_online)} WHERE mac = '{device.mac}'")
+            conn.commit()
+            return device
+        except Exception as e:
+            logger.error(f"Error updating online status for {device.mac}: {e}")
+            raise
+
 
     @con_db
     def get_online_devices(self, connection=None) -> List[Sensor]:
