@@ -5,9 +5,14 @@ from flask_server.flask_server import create_app
 import socket
 import json
 
+import time
+
 class DiscoveryClient:
     def __init__(self, discovery_port=5000):
         self.discovery_port = discovery_port
+        self.last_registration_time = 0  # Время последней регистрации
+        self.registration_interval = 60  # Интервал в секундах (1 минута)
+        self.is_registered = False  # Флаг успешной регистрации
 
     def start(self):
         udp_thread = threading.Thread(target=self._listen_for_discovery)
@@ -20,12 +25,16 @@ class DiscoveryClient:
         s.bind(('', self.discovery_port))
 
         try:
-            while True:
+            while not self.is_registered:  # Слушать только до успешной регистрации
                 data, addr = s.recvfrom(1024)
                 try:
                     message = json.loads(data.decode('utf-8'))
                     if message["type"] == "discovery":
-                        self._register_with_server(addr[0], message["tcp_port"])
+                        current_time = time.time()
+                        # Проверяем, прошёл ли интервал регистрации
+                        if current_time - self.last_registration_time >= self.registration_interval:
+                            self._register_with_server(addr[0], message["tcp_port"])
+                            self.last_registration_time = current_time
                 except Exception as e:
                     print(f"Error processing discovery message: {e}")
         finally:
@@ -39,8 +48,12 @@ class DiscoveryClient:
                 response = s.recv(1024).decode()
                 if response == "OK":
                     print(f"Successfully registered with server at {server_ip}")
+                    self.is_registered = True  # Устанавливаем флаг успешной регистрации
         except Exception as e:
             print(f"Failed to register with server at {server_ip}: {e}")
+
+
+######################################################################################################################
 
 
 def run_discovery_client():
