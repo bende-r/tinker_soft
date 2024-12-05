@@ -12,13 +12,12 @@ logger = get_logger(__name__)
 
 def con_db(func):
     def wrapper(*args, **kwargs):
-        if 'connection' in kwargs:
-            return func(*args, **kwargs)
-
         con = None
         db = args[0].db
         try:
             con = sl.connect(db)
+            logger.info(f"Connection created: {con}")
+            logger.info("Connect to " + db)
             value = func(*args, **kwargs, connection=con)
             return value
         except sl.Error as e:
@@ -27,33 +26,13 @@ def con_db(func):
             logger.error(f"Error during query: {str(e)}")
         except Exception as e:
             logger.error(f"Error connecting to database {db}: {str(e)}")
+            return e
         finally:
             if con:
+                logger.info("Close connect to " + db)
                 con.close()
+
     return wrapper
-
-# def con_db(func):
-#     def wrapper(*args, **kwargs):
-#         con = None
-#         db = args[0].db
-#         try:
-#             con = sl.connect(db)
-#             # logger.info("Connect to " + db)
-#             value = func(*args, **kwargs, connection=con)
-#             return value
-#         except sl.Error as e:
-#             if con:
-#                 con.rollback()
-#             logger.error(f"Error during query: {str(e)}")
-#         except Exception as e:
-#             logger.error(f"Error connecting to database {db}: {str(e)}")
-#             return e
-#         finally:
-#             if con:
-#                 # logger.info("Close connect to " + db)
-#                 con.close()
-
-#     return wrapper
 
 class SQLiteStorage(Storage):
 
@@ -107,32 +86,26 @@ class SQLiteStorage(Storage):
 
     @con_db
     def update_device(self, device: Sensor, connection=None) -> Sensor:
+        
+        logger.info(f"Received connection: {connection}") 
+        print(f"Received connection: {connection}")  # Отобразить connection
+        logger.info(f"Connection type: {type(connection)}")  # Тип объекта
+        logger.info(f"Connection dir: {dir(connection)}")    # Список методов и атрибутов объекта
+
         cursor = connection.cursor()
         cursor.execute(f"UPDATE 'devices' SET avg_battery = {device.avg_battery}, avg_temp = {device.avg_temperature},"
                        f" avg_humidity = {device.avg_humidity}, online = {int(device.is_online)}"
                        f" WHERE mac = '{device.mac}'")
         connection.commit()
-        # logger.info(f"Updating device {device.mac} success")
+        logger.info(f"Updating device {device.mac} success")
         return device
-
-    # @con_db
-    # def update_online_device(self, device: Sensor, connection=None) -> Sensor:
-    #     cursor = connection.cursor()
-    #     cursor.execute(f"UPDATE 'devices' SET online = {int(device.is_online)} WHERE mac = '{device.mac}'")
-    #     connection.commit()
-    #     return device
 
     @con_db
     def update_online_device(self, device: Sensor, connection=None) -> Sensor:
-        try:
-            cursor = connection.cursor()
-            cursor.execute(f"UPDATE 'devices' SET online = {int(device.is_online)} WHERE mac = '{device.mac}'")
-            connection.commit()
-            return device
-        except Exception as e:
-            logger.error(f"Error updating online status for {device.mac}: {e}")
-            raise
-
+        cursor = connection.cursor()
+        cursor.execute(f"UPDATE 'devices' SET online = {int(device.is_online)} WHERE mac = '{device.mac}'")
+        connection.commit()
+        return device
 
     @con_db
     def get_online_devices(self, connection=None) -> List[Sensor]:
