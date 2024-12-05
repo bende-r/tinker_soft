@@ -6,11 +6,13 @@ from flask_api import status
 from sensor_manager.SensorManager import SensorManager
 from logger.logger import get_logger
 from storage.Sensor import Sensor
+from flask_cors import CORS
 
 logger = get_logger(__name__)
 
 def create_app():
     app = Flask(__name__)
+    CORS(app)
     deviceManager = SensorManager()
 
     @app.route('/scan')
