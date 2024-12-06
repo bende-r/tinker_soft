@@ -64,9 +64,11 @@ class SensorManager(object):
         except BTLEException as e:
             logger.error(f"Error connecting to device {device.mac}: {str(e)}")
             self._storage.update_online_device(device, False)
+            device.is_online = False
         except Exception as e:
             logger.error(f"Error polling device {device.mac}. Device might be unreachable or offline.")
             self._storage.update_online_device(device, False)
+            device.is_online = False
         finally:
             ...
 

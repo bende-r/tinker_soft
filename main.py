@@ -24,7 +24,7 @@ class DiscoveryClient:
                 data, addr = s.recvfrom(1024)
                 try:
                     message = json.loads(data.decode('utf-8'))
-                    print(f"got message {message}")
+                    #print(f"got message {message}")
                     if message["type"] == "discovery":
                         self._register_with_server(addr[0], message["tcp_port"])
                 except Exception as e:

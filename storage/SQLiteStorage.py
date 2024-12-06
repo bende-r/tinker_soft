@@ -16,8 +16,8 @@ def con_db(func):
         db = args[0].db
         try:
             con = sl.connect(db)
-            logger.info(f"Connection created: {con}")
-            logger.info("Connect to " + db)
+            #logger.info(f"Connection created: {con}")
+            #logger.info("Connect to " + db)
             value = func(*args, **kwargs, connection=con)
             return value
         except sl.Error as e:
@@ -29,7 +29,7 @@ def con_db(func):
             return e
         finally:
             if con:
-                logger.info("Close connect to " + db)
+                #logger.info("Close connect to " + db)
                 con.close()
 
     return wrapper
