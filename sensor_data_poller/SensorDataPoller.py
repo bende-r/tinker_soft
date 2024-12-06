@@ -15,7 +15,7 @@ MI_BATTERY = "battery"
 _LOGGER = logging.getLogger(__name__)
 
 class SensorDataPoller(object):
-    def __init__(self, mac, backend, cache_timeout=20, retries=3, adapter='hci0', ble_timeout=10):
+    def __init__(self, mac, backend, cache_timeout=10, retries=1, adapter='hci0', ble_timeout=10):
         self._mac = mac
         self._bt_interface = BluetoothInterface(backend, adapter=adapter)
         self._cache = None
