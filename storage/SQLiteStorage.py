@@ -137,12 +137,46 @@ class SQLiteStorage(Storage):
             f" VALUES ('{mac}', '{datetime.datetime.now()}', {temperature}, {humidity}, {battery})")
         connection.commit()
 
+    # @con_db
+    # def get_statistic_data(self, mac: str, connection=None):
+    #     statistic_data = []
+    #     cursor = connection.cursor()
+    #     data = cursor.execute(f"SELECT * FROM 'statistic_data' where divice_mac = '{mac}' and"
+    #                           f" time like '{datetime.datetime.now().date()}%'")
+    #     for row in data:
+    #         statistic_data.append(row)
+    #     return statistic_data
+
     @con_db
-    def get_statistic_data(self, mac: str, connection=None):
+    def get_statistic_data(self, mac: str, start_date: str = None, end_date: str = None, connection=None):
+        """
+        Получить статистические данные за определённый период.
+
+        :param mac: MAC-адрес устройства
+        :param start_date: Начальная дата в формате 'YYYY-MM-DD'. По умолчанию None.
+        :param end_date: Конечная дата в формате 'YYYY-MM-DD'. По умолчанию None.
+        :param connection: SQLite соединение
+        :return: Список записей статистики
+        """
         statistic_data = []
         cursor = connection.cursor()
-        data = cursor.execute(f"SELECT * FROM 'statistic_data' where divice_mac = '{mac}' and"
-                              f" time like '{datetime.datetime.now().date()}%'")
+
+        # Базовый запрос
+        query = f"SELECT * FROM 'statistic_data' WHERE divice_mac = '{mac}'"
+
+        # Условия фильтрации по датам
+        if start_date and end_date:
+            query += f" AND time BETWEEN '{start_date} 00:00:00' AND '{end_date} 23:59:59'"
+        elif start_date:
+            query += f" AND time >= '{start_date} 00:00:00'"
+        elif end_date:
+            query += f" AND time <= '{end_date} 23:59:59'"
+
+        # Выполнение запроса
+        logger.info(f"Executing query: {query}")
+        data = cursor.execute(query)
+
         for row in data:
             statistic_data.append(row)
         return statistic_data
+

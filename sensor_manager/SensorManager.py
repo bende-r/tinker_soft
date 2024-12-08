@@ -101,8 +101,20 @@ class SensorManager(object):
     def get_device(self, mac) -> Sensor:
         return self._storage.get_device(mac)
 
-    def _get_stat(self, device: Sensor) -> List:
-        return self._storage.get_statistic_data(device.mac)
+    # def _get_stat(self, device: Sensor) -> List:
+    #     return self._storage.get_statistic_data(device.mac)
+
+
+    def _get_stat(self, device: Sensor, start_date: str = None, end_date: str = None) -> List:
+        """
+        Получить статистические данные устройства за определённый период.
+
+        :param device: Устройство (Sensor).
+        :param start_date: Начальная дата в формате 'YYYY-MM-DD'.
+        :param end_date: Конечная дата в формате 'YYYY-MM-DD'.
+        :return: Список записей статистики.
+        """
+        return self._storage.get_statistic_data(device.mac, start_date=start_date, end_date=end_date)
 
     def delete_device(self, device: Sensor):
         return self._storage.delete_device(device)
