@@ -43,7 +43,7 @@ class SensorDataPoller(object):
             self.firmware_version()
         except BluetoothBackendException:
             self._last_read = datetime.now() - self._cache_timeout + \
-                timedelta(seconds=300)
+                timedelta(seconds=20)
             raise
 
         with self._bt_interface.connect(self._mac) as connection:
@@ -51,7 +51,7 @@ class SensorDataPoller(object):
                 connection.wait_for_notification(_HANDLE_READ_WRITE_SENSOR_DATA, self, self.ble_timeout)
             except BluetoothBackendException:
                 self._last_read = datetime.now() - self._cache_timeout + \
-                    timedelta(seconds=300)
+                    timedelta(seconds=20)
                 return
 
     def battery_level(self):
@@ -153,4 +153,4 @@ class SensorDataPoller(object):
         else:
             # If a sensor doesn't work, wait 5 minutes before retrying
             self._last_read = datetime.now() - self._cache_timeout + \
-                timedelta(seconds=300)
+                timedelta(seconds=20)
